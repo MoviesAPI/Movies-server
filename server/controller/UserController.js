@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
 const saltRound = 10
+const ObjectID = require('mongodb').ObjectID
 
 class UserController {
     
@@ -15,34 +16,54 @@ class UserController {
             res.status(200)
             .json(dataCreated)
         }).catch(function(err) {
-            console.log('error on signup')
+            // console.log('error on signup')
             res.status(400)
             .json(err)
         })
     }
 
     static signIn(req, res) {
-        User.findOne({
-            where: {
-                email: req.body.email
-            }
-        })
+        User.findOne({email: req.body.email})
         .then(function(dataUser) {
             if(dataUser) {
-                bcrypt.compare(req.body.password, hash, function(err, res) {
-                    if(res) {
-                        User.set({isLogin: true})
-                        res.status(200)
-                            .json({msg: 'succeed login'})
+                bcrypt.compare(req.body.password, dataUser.password, function(err, result) {
+                    if(result) {
+                        User.update({isLogin: true}, function(err, raw) {
+                            res.status(200)
+                                .json({msg: `succeed login ${raw}`})
+                        })
                     } else {
                         res.status(400)
-                        .json({msg: 'email or password wrong'})
+                        .json({msg: 'wrong password'})
                     }
                 })
+            } else {
+                res.status(400)
+                    .json({msg: 'wrong email or password'})
             }
         })
         .catch(function(err) {
-            console.log('error on sign in')
+            // console.log('error on sign in')
+            res.json(err)
+        })
+    }
+
+    static signOut(req, res) {
+        User.findOne({email: req.body.email})
+        .then(function(dataUser) {
+            // console.log(dataUser)
+            if(dataUser) {
+                    User.update({isLogin: false}, function(err, raw) {
+                        res.status(200)
+                            .json({msg: `${dataUser.name} succeed to logout`})
+                    })
+            } else {
+                res.status(400)
+                    .json({msg: 'wrong email or password'})
+            }
+        })
+        .catch(function(err) {
+            // console.log('error on sign out', err)
             res.json(err)
         })
     }
