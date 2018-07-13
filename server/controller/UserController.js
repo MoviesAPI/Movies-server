@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const User = require('../models/user')
+const axios = require('axios')
 const bcrypt = require('bcrypt')
 var jwt = require("jsonwebtoken")
 let saltRounds= 10
@@ -96,6 +97,21 @@ class UserController {
                     .json(err)
             })
     }
+
+    static getSearch(req, res) { 
+        // console.log('something', req.body.search)
+            var url = "https://api.nytimes.com/svc/movies/v2/reviews/search.json";
+            axios.get(url, {
+                headers: {
+                    'api-key': "cf9b4f4cd0454fd3b15ac584bcc5dd35",
+                    'query': req.body.search
+                }
+            })
+            .then(function(response) {
+                console.log('THIS IS RESPONSE', response.data)
+                res.json(response.data)
+            })
+        }
 
     static loginFb(req, res) {
         let emailUser = req.body.email;
