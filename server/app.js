@@ -1,7 +1,22 @@
+require('dotenv').config()
 const express = require('express');
-const mongoose = require('mongoose')
+var cors = require('cors')
+// const mongoose = require('mongoose')
 
-mongoose.connect('mongodb://localhost:27017/movies')
+// mongoose.connect('mongodb://localhost:27017/movies')
+
+//===================== mongoose =========
+
+const mongoose = require("mongoose");
+// mongoose.connect("mongodb://localhost:27017");
+mongoose.connect('mongodb://arief:08november@ds229621.mlab.com:29621/imdbtimes',{ useNewUrlParser: true })
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+  console.log('connected to db')
+});
+
+//===================== mongoose =========
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -10,6 +25,8 @@ const app = express();
 
 // view engine setup
 app.set('view engine', 'jade');
+
+app.use(cors())
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -33,8 +50,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(3000, function() {
-  console.log('ONLINE')
-})
+
 
 module.exports = app;

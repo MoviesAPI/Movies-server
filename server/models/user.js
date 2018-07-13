@@ -5,10 +5,10 @@ const mongoose = require('mongoose'),
 
 
 const UserSchema = new Schema({
-    name: {type: String, required: true, index: {unique: true}},
-    email: {type: String, required: true},
-    password: {type: String, required: true},
-    isLogin: {type: Boolean, default: false}
+    name: {type: String},
+    email: {type: String},
+    password: {type: String}
+    
 }, {
     timestamps: true
 })
