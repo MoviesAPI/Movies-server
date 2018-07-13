@@ -35,7 +35,6 @@ class UserController {
             })
             .then(Users => {
                 // console.log(Users);
-
                 let compare = bcrypt.compareSync(pass, Users.password);
                 if (compare) {
                     jwt.sign({
@@ -101,11 +100,8 @@ class UserController {
     static getSearch(req, res) { 
         // console.log('something', req.body.search)
             var url = "https://api.nytimes.com/svc/movies/v2/reviews/search.json";
-            axios.get(url, {
-                headers: {
-                    'api-key': "cf9b4f4cd0454fd3b15ac584bcc5dd35",
-                    'query': req.body.search
-                }
+            axios.get(url + `?api-key=cf9b4f4cd0454fd3b15ac584bcc5dd35&query=${req.params.query}`, {
+                
             })
             .then(function(response) {
                 console.log('THIS IS RESPONSE', response.data)
@@ -130,13 +126,15 @@ class UserController {
               console.log('==========', 'masuks');
               let objUser = {
                 
-                name: req.body.userName,
+                name: req.body.name,
                 email: req.body.email,
                 password: req.body.password,
                 
               };
+
               User.create(objUser)
                 .then(Users => {
+
                   jwt.sign({
                       userId: Users._id
                     },
@@ -146,7 +144,7 @@ class UserController {
                         message: "login successfully",
                         token
                       });
-                      // console.log(token);
+                      console.log('rrrrrrrrrrrrrrrrrr',token);
                     }
                   )
                 })
